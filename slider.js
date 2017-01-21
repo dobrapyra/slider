@@ -3,6 +3,7 @@ Slider.prototype = {
 	constructor: Slider,
 
 	_ready: false,
+	_imgCover: true, // true: cover; false: contain
 	_animStateFns: {},
 	_easingFns: {
 		easeInQuad: function(f){
@@ -80,6 +81,7 @@ Slider.prototype = {
 		this._canvasEl.setAttribute( 'height', this._canvas.h );
 		this._canvas.cx = this._canvas.w / 2;
 		this._canvas.cy = this._canvas.h / 2;
+		this._canvas.aratio = this._canvas.w / this._canvas.h;
 	},
 
 	_setStateVars: function( data ){
@@ -89,31 +91,35 @@ Slider.prototype = {
 			prevImg: {
 				alpha: 0,
 				scale: 1,
-				image: {
-					sx: 0,
-					sy: 0,
-					sw: 100,
-					sh: 100,
-					x: 0,
-					y: 0,
-					w: 0,
-					h: 0,
-					img: null
+				img: {
+					obj: null,
+					drawArgs: {
+						sx: 0,
+						sy: 0,
+						sw: 100,
+						sh: 100,
+						x: 0,
+						y: 0,
+						w: 0,
+						h: 0
+					} 
 				}
 			},
 			currImg: {
 				aplha: 1,
 				scale: 1,
-				image: {
-					sx: 0,
-					sy: 0,
-					sw: 100,
-					sh: 100,
-					x: 0,
-					y: 0,
-					w: 0,
-					h: 0,
-					img: null
+				img: {
+					obj: null,
+					drawArgs: {
+						sx: 0,
+						sy: 0,
+						sw: 100,
+						sh: 100,
+						x: 0,
+						y: 0,
+						w: 0,
+						h: 0
+					} 
 				}
 			}
 		};
@@ -139,6 +145,8 @@ Slider.prototype = {
 			}
 			$this._resizeTimeout = setTimeout( function(){
 				$this._resizeCanvas();
+				$this._recalcImg( 'prevImg' );
+				$this._recalcImg( 'currImg' );
 			}, 200 );
 		} );
 	},
@@ -184,10 +192,71 @@ Slider.prototype = {
 		} );
 
 		if( allReady ){
+			this._state.currImg.img.obj = this._data[this._currIdx].imgObj;
+			this._recalcImg( 'currImg' );
 			this._ready = true;
 			window._SliderCore.addSlider( this );
 		}
 	},
+
+	_recalcImg: function( img ){
+		if( this._state[img].img.obj === null ) return;
+
+		var iw = this._state[img].img.obj.width;
+		var ih = this._state[img].img.obj.height;
+		var iaratio = iw / ih;
+
+		if( iaratio == this._canvas.aratio ){
+			this._state[img].img.drawArgs = {
+				sx: 0,
+				sy: 0,
+				sw: iw,
+				sh: ih,
+				x: 0,
+				y: 0,
+				w: this._canvas.w,
+				h: this._canvas.h
+			};
+			return;
+		}
+		
+		if( this._imgCover ){ // cover
+
+			var iscale = 1, sx = 0, sy = 0, sw = iw, sh = ih;
+
+			if( iaratio > this._canvas.aratio ){ // img wider than canvas
+				var ow = iaratio * this._canvas.h;
+				iscale = ow / iw;
+				sx = ( ow - this._canvas.w ) / 2 / iscale;
+				sw = this._canvas.w / iscale;
+
+			}else{ // canvas wider than img
+				var oh = this._canvas.w / iaratio;
+				iscale = oh / ih;
+				sy = ( oh - this._canvas.h ) / 2 / iscale;
+				sh = this._canvas.h / iscale;
+
+			}
+
+			this._state[img].img.drawArgs = {
+				sx: sx,
+				sy: sy,
+				sw: sw,
+				sh: sh,
+				x: 0,
+				y: 0,
+				w: this._canvas.w,
+				h: this._canvas.h
+			};
+
+		}
+		// else{ // contain
+
+		// }
+
+
+	},
+
 
 	_anim: function( name, time, cb, partCb ){
 		var animTime = time || this._time[name] || this._time.anim || 0;
@@ -251,22 +320,29 @@ Slider.prototype = {
 	},
 
 	_draw: function( ctx ){
+		var i;
 		if( !this._animArr.length ){
-			ctx.drawImage( this._data[this._currIdx].imgObj, 0, 0 );
+			// ctx.drawImage( this._data[this._currIdx].imgObj, 0, 0 );
+			i = this._state.currImg.img.drawArgs;
+			ctx.drawImage( this._state.currImg.img.obj, i.sx, i.sy, i.sw, i.sh, i.x, i.y, i.w, i.h );
 			return;
 		}
 	
 		ctx.save();
 		ctx.globalAlpha = this._state.currImg.alpha;
 		// ctx.scale(this._state.currImg.scale,this._state.currImg.scale);
-		ctx.drawImage( this._data[this._currIdx].imgObj, 0, 0 );
+		// ctx.drawImage( this._data[this._currIdx].imgObj, 0, 0 );
+		i = this._state.currImg.img.drawArgs;
+		ctx.drawImage( this._state.currImg.img.obj, i.sx, i.sy, i.sw, i.sh, i.x, i.y, i.w, i.h );
 		ctx.restore();
 
 
 		ctx.save();
 		ctx.globalAlpha = this._state.prevImg.alpha;
 		// ctx.scale(this._state.prevImg.scale,this._state.prevImg.scale);
-		ctx.drawImage( this._data[this._prevIdx].imgObj, 0, 0 );
+		// ctx.drawImage( this._data[this._prevIdx].imgObj, 0, 0 );
+		i = this._state.prevImg.img.drawArgs;
+		ctx.drawImage( this._state.prevImg.img.obj, i.sx, i.sy, i.sw, i.sh, i.x, i.y, i.w, i.h );
 		ctx.restore();
 
 		// ctx.scale(1,1);
@@ -282,6 +358,12 @@ Slider.prototype = {
 
 		this._prevIdx = this._currIdx;
 		this._currIdx = idx;
+
+		this._state.prevImg.img.obj = this._data[this._prevIdx].imgObj;
+		this._state.currImg.img.obj = this._data[this._currIdx].imgObj;
+
+		this._recalcImg( 'prevImg' );
+		this._recalcImg( 'currImg' );
 
 		this._anim( 'fade', null, cb );
 		// this._anim( 'zoom', null, cb );
