@@ -149,6 +149,25 @@ Slider.prototype = {
 				$this._recalcImg( 'currImg' );
 			}, 200 );
 		} );
+
+		window.addEventListener( 'keyup', function(e){
+			var keyCode = e.which || e.keyCode;
+			// console.log( keyCode );
+			switch( keyCode ){
+
+				default: break;
+				
+				case 37: // L arrow
+				case 38: // T arrow
+					$this.prevSlide();
+				break;
+
+				case 39: // R arrow
+				case 40: // D arrow
+					$this.nextSlide();
+				break;
+			}
+		} );
 	},
 
 	_recalcCursorPos: function( e ){	
