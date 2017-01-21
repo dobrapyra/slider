@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+		<title>Canvas Sliders by dobrapyra</title>
+		<meta name="format-detection" content="telephone=no">
+
+		<link rel="stylesheet" type="text/css" href="style.css">
+
+		<script type="text/javascript" src="sliderCore.js"></script>
+		<script type="text/javascript" src="slider.js"></script>
+
+	</head>
+	<body>
+
+		<canvas id="slider" width="1200" height="800"></canvas>
+
+		<script type="text/javascript" src="scripts.js"></script>
+
+		<button id="start-loop" style="display: block; position: absolute; bottom: 0; left: 0;">START LOOP</button>
+		<button id="stop-loop" style="display: block; position: absolute; bottom: 0; right: 0;">STOP LOOP</button>
+
+		<script type="text/javascript">
+
+			var startLoopButton = document.getElementById('start-loop');
+			startLoopButton.addEventListener('click', function(e){
+				window._SliderCore._startLoop();
+			});
+
+			var stopLoopButton = document.getElementById('stop-loop');
+			stopLoopButton.addEventListener('click', function(e){
+				window._SliderCore._stopLoop();
+			});
+			
+		</script>
+
+	</body>
+</html>
