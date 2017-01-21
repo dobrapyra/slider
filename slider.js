@@ -349,7 +349,9 @@ Slider.prototype = {
 	
 		ctx.save();
 		ctx.globalAlpha = this._state.currImg.alpha;
-		// ctx.scale(this._state.currImg.scale,this._state.currImg.scale);
+		ctx.translate( this._canvas.cx, this._canvas.cy );
+		ctx.scale( this._state.currImg.scale,this._state.currImg.scale );
+		ctx.translate( -this._canvas.cx, -this._canvas.cy );
 		// ctx.drawImage( this._data[this._currIdx].imgObj, 0, 0 );
 		i = this._state.currImg.img.drawArgs;
 		ctx.drawImage( this._state.currImg.img.obj, i.sx, i.sy, i.sw, i.sh, i.x, i.y, i.w, i.h );
@@ -358,7 +360,9 @@ Slider.prototype = {
 
 		ctx.save();
 		ctx.globalAlpha = this._state.prevImg.alpha;
-		// ctx.scale(this._state.prevImg.scale,this._state.prevImg.scale);
+		ctx.translate( this._canvas.cx, this._canvas.cy );
+		ctx.scale( this._state.prevImg.scale,this._state.prevImg.scale );
+		ctx.translate( -this._canvas.cx, -this._canvas.cy );
 		// ctx.drawImage( this._data[this._prevIdx].imgObj, 0, 0 );
 		i = this._state.prevImg.img.drawArgs;
 		ctx.drawImage( this._state.prevImg.img.obj, i.sx, i.sy, i.sw, i.sh, i.x, i.y, i.w, i.h );
@@ -385,7 +389,7 @@ Slider.prototype = {
 		this._recalcImg( 'currImg' );
 
 		this._anim( 'fade', null, cb );
-		// this._anim( 'zoom', null, cb );
+		this._anim( 'zoom', null, cb );
 	},
 
 	nextSlide: function( cb ){
