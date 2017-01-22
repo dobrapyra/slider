@@ -241,20 +241,18 @@ Slider.prototype = {
 		
 		if( this._imgCover ){ // cover
 
-			var iscale = 1, sx = 0, sy = 0, sw = iw, sh = ih;
+			var iscale = 1, ow, oh, sx = 0, sy = 0, sw = iw, sh = ih;
 
 			if( iaratio > this._canvas.aratio ){ // img wider than canvas
-				var ow = iaratio * this._canvas.h;
+				ow = iaratio * this._canvas.h;
 				iscale = ow / iw;
 				sx = ( ow - this._canvas.w ) / 2 / iscale;
 				sw = this._canvas.w / iscale;
-
 			}else{ // canvas wider than img
-				var oh = this._canvas.w / iaratio;
+				oh = this._canvas.w / iaratio;
 				iscale = oh / ih;
 				sy = ( oh - this._canvas.h ) / 2 / iscale;
 				sh = this._canvas.h / iscale;
-
 			}
 
 			this._state[img].img.drawArgs = {
@@ -268,10 +266,30 @@ Slider.prototype = {
 				h: this._canvas.h
 			};
 
-		}
-		// else{ // contain
+		}else{ // contain
 
-		// }
+			var x = 0, y = 0, w = this._canvas.w, h = this._canvas.h;
+
+			if( iaratio > this._canvas.aratio ){ // img wider than canvas
+				h = this._canvas.w / iaratio;
+				y = ( this._canvas.h - h ) / 2;
+			}else{ // canvas wider than img
+				w = iaratio * this._canvas.h;
+				x = ( this._canvas.w - w ) / 2;
+			}
+
+			this._state[img].img.drawArgs = {
+				sx: 0,
+				sy: 0,
+				sw: iw,
+				sh: ih,
+				x: x,
+				y: y,
+				w: w,
+				h: h
+			};
+
+		}
 
 
 	},
