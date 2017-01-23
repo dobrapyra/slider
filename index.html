@@ -18,8 +18,12 @@
 
 		<script type="text/javascript" src="scripts.js"></script>
 
-		<button id="start-loop" style="display: block; position: absolute; bottom: 0; left: 0;">START LOOP</button>
-		<button id="stop-loop" style="display: block; position: absolute; bottom: 0; right: 0;">STOP LOOP</button>
+		<div class="buttons">
+			<button id="start-loop">Start loop</button>
+			<button id="stop-loop">Stop loop</button>
+			<button id="prev-slide">Prev slide</button>
+			<button id="next-slide">Next slide</button>
+		</div>
 
 		<script type="text/javascript">
 
@@ -32,6 +36,17 @@
 			stopLoopButton.addEventListener('click', function(e){
 				window._SliderCore._stopLoop();
 			});
+
+			var prevSlideButton = document.getElementById('prev-slide');
+			prevSlideButton.addEventListener('click', function(e){
+				window._SliderCore._slidersArr[0].prevSlide();
+			});
+
+			var nextSlideButton = document.getElementById('next-slide');
+			nextSlideButton.addEventListener('click', function(e){
+				window._SliderCore._slidersArr[0].nextSlide();
+			});
+
 			
 		</script>
 
