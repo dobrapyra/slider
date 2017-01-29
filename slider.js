@@ -326,7 +326,7 @@ Slider.prototype = {
 		var k, remArr = [];
 		for( k in this._animArr ){
 
-			if( this._animArr[k].b === null || this._animArr[k].e === null ){
+			if( this._animArr[k].b === null || this._animArr[k].e === null ){ // anim init - set time
 				this._animArr[k].b = t;
 				this._animArr[k].e = t + this._animArr[k].time;
 			}
